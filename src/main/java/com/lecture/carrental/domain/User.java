@@ -27,7 +27,7 @@ public class User {
     @Size(max=15)
     @NotNull(message = "Please enter your first name")
     @Column(nullable = false, length = 15)
-    private String firsName;
+    private String firstName;
 
     @Size(max=15)
     @NotNull(message = "Please enter your last name")
@@ -63,7 +63,7 @@ public class User {
     private String zipCode;
 
     @Column(nullable = false)
-    private Boolean builtIn;
+    private Boolean builtIn=false;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="user_roles",
