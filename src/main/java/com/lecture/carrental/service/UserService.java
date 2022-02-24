@@ -156,4 +156,13 @@ private final static String USER_NOT_FOUND_MSG="user with id %d not found";
         });
     }return roles;
     }
+
+    public void removeById(Long id) throws ResourceNotFoundException{
+        User user=userRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG,id)));
+        if (user.getBuiltIn()){
+            throw new BadRequestException("You dont have permission to delete this user!");
+        }
+        userRepository.deleteById(id);
+    }
 }
