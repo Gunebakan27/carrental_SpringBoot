@@ -35,39 +35,40 @@ public class UserController {
 
     @GetMapping("/user/auth/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ProjectUser>>getAllUsers(){
-        List<ProjectUser> users=userService.fetchAllUsers();
-        return new ResponseEntity<>(users,HttpStatus.OK);
+    public ResponseEntity<List<ProjectUser>> getAllUsers() {
+        List<ProjectUser> users = userService.fetchAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/user/{id}/auth")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO>getUserByIdAdmin(@PathVariable Long id){
-        UserDTO user=userService.findById(id);
+    public ResponseEntity<UserDTO> getUserByIdAdmin(@PathVariable Long id) {
+        UserDTO user = userService.findById(id);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('CUSTOMER')or hasRole('ADMIN')")
-    public ResponseEntity<UserDTO>getUserById(HttpServletRequest request){
-        Long id=(Long)request.getAttribute("id");
-        UserDTO userDTO=userService.findById(id);
+    public ResponseEntity<UserDTO> getUserById(HttpServletRequest request) {
+        Long id = (Long) request.getAttribute("id");
+        UserDTO userDTO = userService.findById(id);
 
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Boolean>> registerUser(@Valid @RequestBody User user){
+    public ResponseEntity<Map<String, Boolean>> registerUser(@Valid @RequestBody User user) {
         userService.register(user);
 
-        Map<String, Boolean>map=new HashMap<>();
-        map.put("User registered successfully!",true);
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("User registered successfully!", true);
         return new ResponseEntity<>(map, HttpStatus.CREATED);
 
     }
+
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody Map<String, Object> userMap){
+    public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody Map<String, Object> userMap) {
         String email = (String) userMap.get("email");
         String password = (String) userMap.get("password");
         userService.login(email, password);
@@ -79,45 +80,49 @@ public class UserController {
         map.put("token", jwt);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
-    @PutMapping(path="/user")
+
+    @PutMapping(path = "/user")
     @PreAuthorize("hasRole('CUSTOMER')or hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Boolean>>updateUser(HttpServletRequest request,
-                                                          @Valid @RequestBody UserDTO userDTO){
-        Long id=(Long) request.getAttribute("id");
+    public ResponseEntity<Map<String, Boolean>> updateUser(HttpServletRequest request,
+                                                           @Valid @RequestBody UserDTO userDTO) {
+        Long id = (Long) request.getAttribute("id");
         userService.updateUser(id, userDTO);
-        Map<String, Boolean>map=new HashMap<>();
-        map.put("success",true);
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("success", true);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
-@PatchMapping("/user/auth")
-@PreAuthorize("hasRole('CUSTOMER')or hasRole('ADMIN')")
-    public ResponseEntity<Map<String,Boolean>>updatePassword(HttpServletRequest request,
-                                                             @Valid @RequestBody Map<String,Object>userMap){
-        Long id=(Long)request.getAttribute("id");
-        String newPassword=(String)userMap.get("newPassword");
-        String oldPassword=(String)userMap.get("oldPassword");
 
-        userService.updatePassword(id,newPassword,oldPassword);
-        Map<String, Boolean>map=new HashMap<>();
-        map.put("success",true);
-        return new ResponseEntity<>(map,HttpStatus.OK);
-}
-@PutMapping("/user/{id}/auth")
-@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Boolean>>updateUserAuth(@PathVariable Long id,
-                                                              @Valid @RequestBody AdminDTO adminDTO){
-        userService.updateUserAuth(id, adminDTO);
-        Map<String,Boolean>map=new HashMap<>();
-        map.put("success",true);
+    @PatchMapping("/user/auth")
+    @PreAuthorize("hasRole('CUSTOMER')or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Boolean>> updatePassword(HttpServletRequest request,
+                                                               @Valid @RequestBody Map<String, Object> userMap) {
+        Long id = (Long) request.getAttribute("id");
+        String newPassword = (String) userMap.get("newPassword");
+        String oldPassword = (String) userMap.get("oldPassword");
+
+        userService.updatePassword(id, newPassword, oldPassword);
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("success", true);
         return new ResponseEntity<>(map, HttpStatus.OK);
-}
-@DeleteMapping("/user/{id}/auth")
-@PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<Map<String,Boolean>> deleteUser(@PathVariable Long id){
+    }
+
+    @PutMapping("/user/{id}/auth")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Boolean>> updateUserAuth(@PathVariable Long id,
+                                                               @Valid @RequestBody AdminDTO adminDTO) {
+        userService.updateUserAuth(id, adminDTO);
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("success", true);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/{id}/auth")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Boolean>> deleteUser(@PathVariable Long id) {
         userService.removeById(id);
-    Map<String,Boolean>map=new HashMap<>();
-    map.put("success",true);
-    return new ResponseEntity<>(map, HttpStatus.OK);
-}
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("success", true);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
 
 }
