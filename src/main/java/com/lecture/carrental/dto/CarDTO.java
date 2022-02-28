@@ -1,5 +1,6 @@
 package com.lecture.carrental.dto;
 
+import com.lecture.carrental.domain.Car;
 import com.lecture.carrental.domain.FileDB;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -16,50 +18,54 @@ import java.util.Set;
 @AllArgsConstructor
 public class CarDTO {
 
-    @Size(max = 30, message = "Size is exceeded")
-    @NotNull(message = "Please enter the car model")
+    private Long id;
+
+
     private String model;
 
-    @NotNull(message = "Please enter the car doors")
     private Integer doors;
 
-    @NotNull(message = "Please enter the seat numbers")
     private Integer seats;
 
-    @NotNull(message = "Please enter the car luggage")
     private Integer luggage;
 
-    @Size(max = 30)
-    @NotNull(message = "Please enter the car transmission")
+
     private String transmission;
 
-    @NotNull(message = "Please enter the air condition")
     private Boolean airConditioning;
 
-    @NotNull(message = "Please enter the car age")
     private Integer age;
 
-    @NotNull(message = "Please enter the price per hour")
     private Double pricePerHour;
 
-    @Size(max = 30)
-    @NotNull(message = "Please enter the car fuel type")
+
     private String fuelType;
 
     private Boolean builtIn;
 
-    private Set<FileDB> image;
+    private Set<String> image;
 
-    public CarDTO(String model, Integer doors, Integer seats, Integer luggage, String transmission, Boolean airConditioning, Integer age, Double pricePerHour, String fuelType, Boolean builtIn) {
-        this.model = model;
-        this.doors = doors;
-        this.seats = seats;
-        this.luggage = luggage;
-        this.transmission = transmission;
-        this.airConditioning = airConditioning;
-        this.age = age;
-        this.pricePerHour = pricePerHour;
-        this.fuelType = fuelType;
-        this.builtIn = builtIn;
+    public Set<String> getImageId(Set<FileDB> images) {
+        Set<String> img = new HashSet<>();
+        FileDB[] fileDB = images.toArray(new FileDB[images.size()]);
+        for (int i = 0; i < images.size(); i++) {
+            img.add(fileDB[i].getId());
+        }
+        return img;
+    }
+
+    public CarDTO(Car car) {
+        this.id = car.getId();
+        this.model = car.getModel();
+        this.doors = car.getDoors();
+        this.seats = car.getSeats();
+        this.luggage = car.getLuggage();
+        this.transmission = car.getTransmission();
+        this.airConditioning = car.getAirConditioning();
+        this.age = car.getAge();
+        this.pricePerHour = car.getPricePerHour();
+        this.fuelType = car.getFuelType();
+        this.builtIn = car.getBuiltIn();
+        this.image = getImageId(car.getImage());
     }
 }

@@ -44,7 +44,7 @@ public class FileDBController {
         }
 
     }
-    @GetMapping("/{id}")
+    @GetMapping("/download/{id}")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<byte[]>getFile(@PathVariable String id){
         FileDB fileDB=fileDBService.getFileById(id);

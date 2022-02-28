@@ -21,7 +21,7 @@ public class CarService {
     private final CarRepository carRepository;
     private final FileDBRepository fileDBRepository;
     private final static String IMAGE_NOT_FOUND_MSG = "image with id %s not found";
-    private final static String USER_NOT_FOUND_MSG = "User with id %s not found";
+    private final static String CAR_NOT_FOUND_MSG = "Car with id %s not found";
 
     public void add(Car car, String imageId) throws BadRequestException {
         FileDB fileDB = fileDBRepository.findById(imageId).orElseThrow(
@@ -34,16 +34,40 @@ public class CarService {
         carRepository.save(car);
     }
 
-    public CarDTO findById(Long id) throws ResourceNotFoundException {
-        Car car = carRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG, id)));
 
-        return new CarDTO(car.getModel(), car.getDoors(), car.getSeats(), car.getLuggage(), car.getTransmission(),
-                car.getAirConditioning(), car.getAge(), car.getPricePerHour(), car.getFuelType(), car.getBuiltIn());
+    public List<CarDTO> fetchAllCars() {
 
+        return carRepository.findAllCar();
     }
-    public List<ProjectCar> fetchAllCars() {
 
-        return carRepository.findAllBy();
+    public CarDTO findById(Long id) throws ResourceNotFoundException {
+        return carRepository.findByIdOrderById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(
+                        CAR_NOT_FOUND_MSG, id)));
+    }
+
+    public void updateCar(Long id, String imageId, Car car) throws BadRequestException {
+        FileDB fileDB = fileDBRepository.findById(imageId).get();
+        Car carInfo = carRepository.getById(id);
+        if (carInfo.getBuiltIn()) {
+            throw new BadRequestException("You dont have permission to update car!");
+        }
+//        car.setBuiltIn(false); //zaten default false olarak ayarlandi
+        Set<FileDB> fileDBS = new HashSet<>();
+        fileDBS.add(fileDB);
+        car.setImage(fileDBS);
+        car.setId(id);
+
+        carRepository.save(car);
+    }
+
+    public void removeById(Long id) throws  BadRequestException{
+        Car car=carRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(String.format(CAR_NOT_FOUND_MSG,id)));
+
+        if (car.getBuiltIn()){
+            throw new BadRequestException("You dont have permission to delete car");
+        }
+        carRepository.deleteById(id);
     }
 }

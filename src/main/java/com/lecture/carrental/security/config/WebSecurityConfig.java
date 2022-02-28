@@ -44,14 +44,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().and().cors().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
+        http.cors().and().csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/car-rental/api/user/**", "/car-rental/api/files/**", "/car-rental/api/car/**")
-                .permitAll()
+                .authorizeRequests().antMatchers("/register", "/login", "/files/display/**",
+                        "/files/download/**","/car/visitors/**").permitAll()
                 .anyRequest().authenticated();
-        http.csrf().and().cors().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .antMatcher("/car-rental/api/register").antMatcher("/car-rental/api/login");
+//        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.csrf().and().cors().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+//                .authorizeRequests().antMatchers("/car-rental/api/user/**", "/car-rental/api/files/**", "/car-rental/api/car/**")
+//                .permitAll()
+//                .anyRequest().authenticated();
+//        http.csrf().and().cors().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+//                .antMatcher("/car-rental/api/register").antMatcher("/car-rental/api/login");
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
     @Override

@@ -28,6 +28,7 @@ public class CarController {
     public CarService carService;
 
     @PostMapping("/admin/{imageId}/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Boolean>> addCar(@PathVariable String imageId,
                                                        @Valid @RequestBody Car car) {
         carService.add(car, imageId);
@@ -37,17 +38,37 @@ public class CarController {
         return new ResponseEntity<>(map, HttpStatus.CREATED);
 
     }
-    @GetMapping("")
-    @PreAuthorize("hasRole('CUSTOMER')or hasRole('ADMIN')")
-    public ResponseEntity<CarDTO>getCarById(HttpServletRequest request){
-        Long id= (Long) request.getAttribute("id");
-        CarDTO carDTO=carService.findById(id);
-        return new ResponseEntity<>(carDTO,HttpStatus.OK);
+
+    @GetMapping("/visitors/{id}")
+    public ResponseEntity<CarDTO> getCarById(@PathVariable Long id) {
+        CarDTO carDTO = carService.findById(id);
+        return new ResponseEntity<>(carDTO, HttpStatus.OK);
     }
-    @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ProjectCar>> getAllCars() {
-        List<ProjectCar> cars = carService.fetchAllCars();
+
+    @GetMapping("/visitors/all")
+    public ResponseEntity<List<CarDTO>> getAllCars() {
+        List<CarDTO> cars = carService.fetchAllCars();
         return new ResponseEntity<>(cars, HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/auth")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Boolean>> updateCar(@RequestParam("id") Long id,
+                                                          @RequestParam("imageId") String imageId,
+                                                          @Valid @RequestBody Car car) {
+
+        carService.updateCar(id, imageId, car);
+
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("success", true);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+    @DeleteMapping("/admin/{id}/auth")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String,Boolean>>deleteCar(@PathVariable Long id){
+        carService.removeById(id);
+        Map<String,Boolean>map=new HashMap<>();
+        map.put("success",true);
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }
