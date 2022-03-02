@@ -4,7 +4,6 @@ import com.lecture.carrental.domain.Car;
 import com.lecture.carrental.domain.FileDB;
 import com.lecture.carrental.dto.CarDTO;
 import com.lecture.carrental.exception.ResourceNotFoundException;
-import com.lecture.carrental.projection.ProjectCar;
 import com.lecture.carrental.repository.CarRepository;
 import com.lecture.carrental.repository.FileDBRepository;
 import lombok.AllArgsConstructor;
