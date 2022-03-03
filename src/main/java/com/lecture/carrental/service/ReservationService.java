@@ -63,18 +63,19 @@ public class ReservationService {
 
     public List<ReservationDTO> findAllByUserId(Long userId) {
 
-        User user=userRepository.findById(userId)
-                .orElseThrow(()->new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG,userId)));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG, userId)));
 
         return reservationRepository.findAllByUserId(user);
 
     }
 
-    public ReservationDTO findByIdAndUserId(Long id, Long userId) {
-        Optional<User> user=userRepository.findById(userId);
+    public ReservationDTO findByIdAndUserId(Long id, Long userId) throws ResourceNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_MSG, userId)));
 
-        return reservationRepository.findByIdAndUserId(id,user.get())
-                .orElseThrow(()->new ResourceNotFoundException(String.format(RESERVATION_NOT_FOUND_MSG,id)));
+        return reservationRepository.findByIdAndUserId(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(RESERVATION_NOT_FOUND_MSG, id)));
     }
 
     public List<ReservationDTO> fetchAllReservations() {
@@ -84,6 +85,36 @@ public class ReservationService {
     public ReservationDTO findById(Long id) {
 
         return reservationRepository.findByIdOrderById(id)
-                .orElseThrow(()->new ResourceNotFoundException(String.format(RESERVATION_NOT_FOUND_MSG,id)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(RESERVATION_NOT_FOUND_MSG, id)));
+    }
+
+    public void updateReservation(Reservation reservation, Long reservationId, Car carId) throws BadRequestException {
+        boolean checkStatus = carAvailability(carId.getId(), reservation.getPickUpTime(), reservation.getDropOffTime());
+        Reservation reservationExist = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(RESERVATION_NOT_FOUND_MSG, reservationId)));
+        if (reservation.getPickUpTime().compareTo(reservationExist.getPickUpTime()) == 0 &&
+                reservation.getDropOffTime().compareTo(reservationExist.getDropOffTime()) == 0 &&
+                carId.getId().equals(reservationExist.getCar().getId())) {
+            reservationExist.setStatus(reservation.getStatus());
+        } else if (checkStatus)
+            throw new BadRequestException("Car is laready reserved! Please choose another!");
+Double totalPrice=totalPrice(reservation.getPickUpTime(), reservation.getDropOffTime(),carId.getId());
+reservationExist.setTotalPrice(totalPrice);
+reservationExist.setCar(carId);
+reservationExist.setPickUpTime(reservation.getPickUpTime());
+reservationExist.setDropOffTime(reservation.getDropOffTime());
+reservationExist.setPickUpLocation(reservation.getPickUpLocation());
+reservationExist.setDropOffLocation(reservation.getDropOffLocation());
+reservationRepository.save(reservationExist);
+    }
+
+    public void removeById(Long id) throws BadRequestException {
+        boolean reservationExists=reservationRepository.existsById(id);
+
+        if (!reservationExists){
+            throw new ResourceNotFoundException("Reservation does not exist");
+        }
+
+        reservationRepository.deleteById(id);
     }
 }

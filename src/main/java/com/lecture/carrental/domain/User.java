@@ -1,5 +1,4 @@
 package com.lecture.carrental.domain;
-
 import com.lecture.carrental.domain.enumeration.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +20,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,13 +41,13 @@ public class User {
     private String password;
 
     @Pattern(regexp = "^((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$",
-            message = "Please enter a valid phone number")
-    @Size(min = 14, max = 14, message = "It must be 14 digit")
-    @NotNull(message = "Please enter your phonenumber")
+            message = "Please enter valid phone number")
+    @Size(min = 14, max = 14)
+    @NotNull(message = "Please enter your phone number")
     @Column(nullable = false, length = 14)
     private String phoneNumber;
 
-    @Email(message = "Please enter a valid email")
+    @Email(message = "Please enter valid email")
     @Size(min = 5, max = 150)
     @NotNull(message = "Please enter your email")
     @Column(nullable = false, unique = true, length = 14)
@@ -74,8 +74,10 @@ public class User {
 
     public Set<String> getRole() {
         Set<String> roles1 = new HashSet<>();
+
         Role[] role = roles.toArray(new Role[roles.size()]);
-        for (int i = 0; i < roles.size(); i++) {
+
+        for (int i = 0; i < roles.size(); i++){
             if (role[i].getName().equals(UserRole.ROLE_ADMIN))
                 roles1.add("Administrator");
             else
@@ -83,5 +85,4 @@ public class User {
         }
         return roles1;
     }
-
 }
