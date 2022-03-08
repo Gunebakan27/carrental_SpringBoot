@@ -1,6 +1,4 @@
 package com.lecture.carrental.security.config;
-
-
 import com.lecture.carrental.security.jwt.AuthEntryPointJwt;
 import com.lecture.carrental.security.jwt.AuthTokenFilter;
 import com.lecture.carrental.security.service.UserDetailsServiceImpl;
@@ -42,27 +40,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+    // TODO: change it
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        http.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/register", "/login", "/files/display/**",
-                        "/files/download/**","/car/visitors/**").permitAll()
+                        "/files/download/**", "/car/visitors/**").permitAll()
                 .anyRequest().authenticated();
-//        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-//        http.csrf().and().cors().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .authorizeRequests().antMatchers("/car-rental/api/user/**", "/car-rental/api/files/**", "/car-rental/api/car/**")
-//                .permitAll()
-//                .anyRequest().authenticated();
-//        http.csrf().and().cors().disable().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .antMatcher("/car-rental/api/register").antMatcher("/car-rental/api/login");
+
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers();
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers("/swagger-ui.html", "/v2/api-docs", "/configuration/**",
+                "/swagger-resources/**", "/webjars/**", "/api-docs/**");
     }
 }

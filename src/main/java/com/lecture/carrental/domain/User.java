@@ -85,4 +85,8 @@ public class User {
         }
         return roles1;
     }
+    // TODO: added
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }
