@@ -27,8 +27,8 @@ public class SpringFoxConfig {
         return new ApiInfoBuilder()
                 .title("Car Rental Swagger Documentation")
                 .description("car rental project")
-                .version("1.0.0")
+                .version("1.1.0")
                 .build();
     }
-
+    // http://localhost:8080/car-rental/api/swagger-ui.html#/
 }
