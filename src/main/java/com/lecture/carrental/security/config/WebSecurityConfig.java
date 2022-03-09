@@ -49,11 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/register", "/login", "/files/display/**",
                         "/files/download/**", "/car/visitors/**").permitAll()
                 .anyRequest().authenticated();
-
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
     @Override
-    public void configure(WebSecurity web) {
+    public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/swagger-ui.html", "/v2/api-docs", "/configuration/**",
                 "/swagger-resources/**", "/webjars/**", "/api-docs/**");
     }
